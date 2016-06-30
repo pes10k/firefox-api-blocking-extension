@@ -6,30 +6,10 @@
 
         var allPurposeProxy,
             featuresToBlock = eval(${featuresToBlockEnc}),
-            pathToRef;
-
-        allPurposeProxy = function (featurePath) {
-            return new Proxy(function () {}, {
-                get: function (target, property, receiver) {
-                    if (property === "length") {
-                        return 0;
-                    }
-                    return allPurposeProxy(featurePath);
-                },
-                set: function (target, property, value, receiver) {
-                    return allPurposeProxy(featurePath);
-                },
-                apply: function (target, thisArg, argumentsList) {
-                    return allPurposeProxy(featurePath);
-                },
-                enumerate: function (target) {
-                    return [][Symbol.iterator]();
-                },
-                ownKeys: function (target) {
-                    return [];
-                }
-            });
-        };
+            pathToRef,
+            noOpFunc,
+            toPrimitiveFunc,
+            origConsole = window.console;
 
         pathToRef = function (keyPath) {
             return keyPath.reduce(function (prev, cur) {
@@ -40,23 +20,57 @@
             }, window);
         };
 
+        noOpFunc = function (id, oldval, newval) {
+            return oldval;
+        };
 
-        featuresToBlock.forEach(function ([feature, returnValue]) {
+        toPrimitiveFunc = function (hint) {
+            if (hint === "number") {
+                return 0;
+            }
+            if (hint === "string") {
+                return "0";
+            }
+            return false;
+        };
 
-            var pathSegments = feature.split("."),
+        allPurposeProxy = new Proxy(function () {}, {
+            get: function (target, property, receiver) {
+                if (property === Symbol.toPrimitive) {
+                    return toPrimitiveFunc;
+                }
+                return allPurposeProxy;
+            },
+            set: function (target, property, value, receiver) {
+                return allPurposeProxy;
+            },
+            apply: function (target, thisArg, argumentsList) {
+                return allPurposeProxy;
+            },
+            enumerate: function (target) {
+                return [][Symbol.iterator]();
+            },
+            ownKeys: function (target) {
+                return [];
+            }
+        });
+
+        featuresToBlock.forEach(function ([featurePath, featureType]) {
+
+            var pathSegments = featurePath.split("."),
                 numSegments = pathSegments.length,
                 pathToRoot = pathSegments.slice(0, numSegments - 1),
                 leaf = pathSegments[numSegments - 1],
                 rootElement = pathToRef(pathToRoot);
 
             if (rootElement === undefined) {
-                throw "Unable to find path for " + feature;
+                throw "Unable to find path for " + featurePath;
             }
 
-            if (returnValue === undefined || returnValue === null) {
-                rootElement[leaf] = allPurposeProxy;
+            if (featureType === "property") {
+                rootElement.watch(leaf, noOpFunc);
             } else {
-                rootElement[leaf] = returnValue;
+                rootElement[leaf] = allPurposeProxy;
             }
         });
     `);
