@@ -29,7 +29,7 @@
                 return 0;
             }
             if (hint === "string") {
-                return "0";
+                return "";
             }
             return false;
         };
@@ -55,9 +55,11 @@
             }
         });
 
-        featuresToBlock.forEach(function ([featurePath, featureType]) {
+        featuresToBlock.forEach(function (row) {
 
-            var pathSegments = featurePath.split("."),
+            var featurePath = row[0],
+                featureType = row[1],
+                pathSegments = featurePath.split("."),
                 numSegments = pathSegments.length,
                 pathToRoot = pathSegments.slice(0, numSegments - 1),
                 leaf = pathSegments[numSegments - 1],
