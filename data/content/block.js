@@ -6,10 +6,21 @@
 
         var allPurposeProxy,
             featuresToBlock = eval(${featuresToBlockEnc}),
+            defaultFunction = function () {},
+            funcPropNames = Object.getOwnPropertyNames(defaultFunction),
+            unconfigurablePropNames = funcPropNames.filter(function (propName) {
+                var possiblePropDesc = Object.getOwnPropertyDescriptor(defaultFunction, propName);
+                return (possiblePropDesc && !possiblePropDesc.configurable);
+            }),
             pathToRef,
             noOpFunc,
             toPrimitiveFunc,
-            origConsole = window.console;
+            debugMsg;
+
+        debugMsg = function (msg) {
+            throw msg;
+            console.log(msg);
+        };
 
         pathToRef = function (keyPath) {
             return keyPath.reduce(function (prev, cur) {
@@ -31,10 +42,10 @@
             if (hint === "string") {
                 return "";
             }
-            return false;
+            return undefined;
         };
 
-        allPurposeProxy = new Proxy(function () {}, {
+        allPurposeProxy = new Proxy(defaultFunction, {
             get: function (target, property, receiver) {
                 if (property === Symbol.toPrimitive) {
                     return toPrimitiveFunc;
@@ -47,11 +58,17 @@
             apply: function (target, thisArg, argumentsList) {
                 return allPurposeProxy;
             },
-            enumerate: function (target) {
-                return [][Symbol.iterator]();
-            },
             ownKeys: function (target) {
-                return [];
+                return unconfigurablePropNames;
+            },
+            has: function (target, property) {
+                return (unconfigurablePropNames.indexOf(property) > -1);
+            },
+            getOwnPropertyDescriptor: function (target, property) {
+                if (unconfigurablePropNames.indexOf(property) === -1) {
+                    return undefined;
+                }
+                return Object.getOwnPropertyDescriptor(defaultFunction, property);
             }
         });
 
