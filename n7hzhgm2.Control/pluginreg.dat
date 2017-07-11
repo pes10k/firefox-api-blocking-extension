@@ -1,0 +1,41 @@
+Generated File. Do not edit.
+
+[HEADER]
+Version:0.17:$
+Arch:x86_64-gcc3:$
+
+[PLUGINS]
+JavaAppletPlugin.plugin:$
+/Library/Internet Plug-Ins/JavaAppletPlugin.plugin:$
+Java 8 Update 131 build 11:$
+1489568354000:0:0:0:$
+Displays Java applet content, or a placeholder if Java is not installed.:$
+Java Applet Plug-in:$
+21
+0:application/x-java-applet;version=1.4:Java Applet::$
+1:application/x-java-applet;version=1.2.1:Java Applet::$
+2:application/x-java-applet;version=1.2.2:Java Applet::$
+3:application/x-java-applet;version=1.3:Java Applet::$
+4:application/x-java-applet;version=1.8:Java Applet::$
+5:application/x-java-vm:Java Applet::$
+6:application/x-java-applet;version=1.1.1:Java Applet::$
+7:application/x-java-applet;deploy=11.131.2:Java Applet::$
+8:application/x-java-applet;javafx=8.0.131:JavaFX Applet::$
+9:application/x-java-applet;version=1.7:Java Applet::$
+10:application/x-java-applet;version=1.4.1:Java Applet::$
+11:application/x-java-applet;version=1.1.2:Java Applet::$
+12:application/x-java-applet:Basic Java Applet::$
+13:application/x-java-applet;version=1.2:Java Applet::$
+14:application/x-java-applet;version=1.1:Java Applet::$
+15:application/x-java-applet;version=1.1.3:Java Applet::$
+16:application/x-java-applet;version=1.6:Java Applet::$
+17:application/x-java-applet;version=1.4.2:Java Applet::$
+18:application/x-java-applet;jpi-version=1.8.0_131:Java Applet::$
+19:application/x-java-applet;version=1.3.1:Java Applet::$
+20:application/x-java-applet;version=1.5:Java Applet::$
+
+[INVALID]
+/Library/Internet Plug-Ins/Disabled Plug-Ins:$
+1474676663000:$
+/Library/Internet Plug-Ins/Quartz Composer.webplugin:$
+1476927837000:$

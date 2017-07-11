@@ -1,94 +1,47 @@
-# API Blocking Firefox Extension
+API Blocking Firefox Extension
+===
 
-## Usage
-The extension reads a comma separated list of standards to block from the
-`FF_STANDARDS` environment variable.  The standard IDs are given below.
+This extension allows users to choose which parts of the Web API they expose
+to websites, using a technique that minimizes the effect of the desirable
+parts of browser functionality.
 
-With this extension installed, Firefox will only run when the `FF_STANDARDS`
-variable is present.
+Running the Extension
+---
+This extension was built for versions of Firefox before Mozilla started
+enforcing code-signing on extensions, and before they deprecated parts of their
+previous add-on API.
 
-For example, to run Firefox with the **Battery Status API** and **Beacon**
-APIs disabled, you might do the following:
+As a result, running the extension requires running a previous version of
+Firefox (version [43.0.4](https://ftp.mozilla.org/pub/firefox/releases/43.0.4/))
+and using a special profile configured to not require code signing.  Such a
+profile is included in this repository, and is configured to already have
+the extension installed.
 
-`FF_STANDARDS=1,2 <path to firefox>`
+You can run the extension with the following steps.
+1. [Download Firefox 43.0.04](https://ftp.mozilla.org/pub/firefox/releases/43.0.4/)
+   for your platform.
+2. Run that version of Firefox so that it uses the included profile:
+   For example, on OSX you would run:
+   `<path to version 43.0.04 Firefox.app>/Contents/MacOS/firefox --profile <path to this archive>/n7hzhgm2.Control`.
 
 
-## Standards Table
+Using the Extension
+---
+Once you're running Firefox with the extension installed, you can configure
+it through the following steps:
 
-Standard ID | Standard Name | Standard Abbreviation
------------ | ------------- | ----------------------
-1 | BA | Battery Status API  
-2 | BE | Beacon  
-3 | CO | Console API  
-4 | CSS-CR | CSS Conditional Rules Module Level 3  
-5 | CSS-FO | CSS Font Loading Module Level 3  
-6 | CSS-OM | CSS Object Model (CSSOM)  
-7 | CSS-VM | CSSOM View Module  
-8 | DO | DeviceOrientation Event Specification  
-9 | DU | Directory Upload  
-10 | DOM1 | Document Object Model (DOM) Level 1 Specification  
-11 | DOM2-C | Document Object Model (DOM) Level 2 Core Specification  
-12 | DOM2-E | Document Object Model (DOM) Level 2 Events Specification  
-13 | DOM2-H | Document Object Model (DOM) Level 2 HTML Specification  
-14 | DOM2-S | Document Object Model (DOM) Level 2 Style Specification  
-15 | DOM2-T | Document Object Model (DOM) Level 2 Traversal and Range Specification  
-16 | DOM3-C | Document Object Model (DOM) Level 3 Core Specification  
-17 | DOM3-X | Document Object Model (DOM) Level 3 XPath Specification  
-18 | DOM | DOM  
-19 | DOM-PS | DOM Parsing and Serialization  
-20 | E | Encoding  
-21 | EME | Encrypted Media Extensions  
-22 | EC | execCommand  
-23 | F | Fetch  
-24 | FA | File API  
-25 | FULL | Fullscreen API  
-26 | GP | Gamepad  
-27 | GEO | Geolocation API Specification  
-28 | GIM | Geometry Interfaces Module Level 1  
-29 | HRT | High Resolution Time Level 2  
-30 | H-B | HTML 9.6 Broadcasting to other browsing contexts
-31 | H-C | HTML 4.12.4 The canvas element
-32 | H-WS | HTML 9.3 Web Sockets
-33 | H-CM | HTML 9.5 Channel Messaging
-34 | H-P | HTML 8.6.1.5 Plugins
-35 | H-WW | HTML 10 Web Workers
-36 | H-WB | HTML 11 Web Storage
-37 | HTML | HTML  
-38 | H-HI | HTML 7.5.2 History Interface
-39 | HTML5 | HTML 5  
-40 | HTML51 | HTML 5.1  
-41 | H-E | HTML Editing APIs  
-42 | IDB | Indexed Database API  
-43 | MCS | Media Capture and Streams  
-44 | MCD | Media Capture from DOM Elements  
-45 | MSE | Media Source Extensions  
-46 | MSR | MediaStream Recording  
-47 | NT | Navigation Timing  
-48 | WN | Web Notifications  
-49 | PV | Page Visibility (Second Edition)  
-50 | PT | Performance Timeline  
-51 | PT2 | Performance Timeline Level 2  
-52 | PL | Pointer Lock  
-53 | PE | Proximity Events  
-54 | RT | Resource Timing  
-55 | SVG | Scalable Vector Graphics (SVG) 1.1 (Second Edition)  
-56 | SEL | Selection API  
-57 | SLC | Selectors API Level 1  
-58 | SW | Service Workers  
-59 | SD | Shadow DOM  
-60 | SO | The Screen Orientation API  
-61 | TC | Timing control for script-based animations  
-62 | TPE | Tracking Preference Expression (DNT)  
-63 | UIE | UI Events Specification  
-64 | URL | URL  
-65 | UTL | User Timing Level 2  
-66 | V | Vibration API  
-67 | DOM4 | W3C DOM4  
-68 | WEBA | Web Audio API  
-69 | WCR | Web Cryptography API  
-70 | WEBGL | WebGL Specification  
-71 | WRTC | WebRTC 1.0: Real-time Communication Between Browser  
-72 | WEBVTT | WebVTT: The Web Video Text Tracks Format  
-73 | AJAX | XMLHttpRequest  
-74 | ALS | Ambient Light Sensor API  
-76 | NS | Non-Standard  
+1. Go to the "Add-Ons" screen in Firefox
+2. Click the "Preferences" button next to the "Web Standard Blocker" extension
+3. Click "Configure WebAPI Settings" on the next page.
+
+The resulting page allows you to configure which WebAPI standards are enabled
+by default (for newly encountered pages).  It also allows you to set
+custom rules for other domains, using regular expression patterns.
+
+If a custom rule's pattern matches a visited domain, that particular Web API
+configuration will be used.  Otherwise, the "default" rule set will be used.
+
+**Note** that you must restart Firefox in order for these changes to become
+active.  This is an implementation detail of doing this modification at the
+extension level.  Pushing this work into the browser itself would not
+require this additional step.
