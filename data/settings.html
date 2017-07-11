@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Web Standard Blocker</title>
+
+    <link href="resource://firefox-api-blocking-extension/data/css/bootstrap.min.css" rel="stylesheet">
+    <link href="resource://firefox-api-blocking-extension/data/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="resource://firefox-api-blocking-extension/data/css/settings.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Configure Web API Access by Domain</h2>
+          <p class="alert alert-warning" role="alert">
+            <strong>Warning!</strong> you'll need to restart Firefox before any of
+            these modifications will be active during your browsing session.
+          </p>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="well">
+            <h3>Domains</h3>
+            <div id="radio-container">
+            </div>
+
+            <div class="form-group">
+              <label for="new-domain">Add a Domain</label>
+              <input type="url" class="form-control" id="new-domain" placeholder="ex: example.org, *.edu">
+              <input class="btn btn-default" id="new-domain-submit" type="submit" value="Submit">
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-8">
+          <h3>Standards to block</h3>
+          <p>
+            <button class="btn btn-default" id="reset-button">Reset to "Agressive" blocking set</button>
+            <button class="btn btn-warning" id="block-all-button">Block all</button>
+            <button class="btn btn-success" id="allow-all-button">Allow all</button>
+          </p>
+          <div id="standard-checks">
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,8 +1,8 @@
 {
   "title": "Web Standard Blocker",
   "name": "firefox-api-blocking-extension",
-  "version": "0.4.0",
-  "description": "A basic add-on",
+  "version": "0.5.0",
+  "description": "Configure the WebAPI available to websites.",
   "main": "index.js",
   "author": "",
   "engines": {
@@ -12,5 +12,14 @@
   "license": "MIT",
   "keywords": [
     "jetpack"
-  ]
+  ],
+  "preferences": [{
+    "type": "control",
+    "label": "Configure WebAPI Settings",
+    "name": "clickedWebAPISettings",
+    "title": "Configure"
+  }],
+  "permissions": {
+    "cross-domain-content": ["resource://firefox-api-blocking-extension/"]
+  }
 }
