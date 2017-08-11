@@ -68,27 +68,11 @@
         }
     });
 
-
-    // featuresToBlock = standardIdsToBlock.split(",").reduce(function (collection, standardId) {
-    //     var newFeatures = standardIdsToFeatures[standardId];
-    //     if (!newFeatures) {
-    //         console.log("Blocking 0 features from standard " + standardId);
-    //         return collection;
-    //     }
-    //     console.log("Blocking " + newFeatures.length + " features from standard " + standardId);
-    //     numFeaturesBlocking += newFeatures.length;
-    //     return collection.concat(newFeatures);
-    // }, []);
-
-    // if (!featuresToBlock[0]) {
-    //     featuresToBlock = [];
-    // }
-
-
     pageMod.PageMod({
         include: "*",
         exclude: "resource://firefox-api-blocking-extension/data/settings.html",
         contentScriptOptions: {
+            isDebugMode: ('DEBUG' in env) ? "debug" : "",
             blockingSettings: store.blockingSettings,
             standardIdsToFeatures: standardIdsToFeatures
         },

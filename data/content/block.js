@@ -1,8 +1,10 @@
 (function () {
 
     var currentDomain = window.location.host,
+        isDebugMode = self.options.isDebugMode,
         blockingSettings = self.options.blockingSettings,
         standardIdsToFeatures = self.options.standardIdsToFeatures,
+        currentDomain = window.location.host, 
         matchingDomainRule,
         standardIdsToBlock,
         featuresToBlock,
@@ -26,7 +28,7 @@
             }
 
             var regexPattern = new RegExp(newDomainRule);
-            if (regexPattern.test(newDomainRule)) {
+            if (regexPattern.test(currentDomain)) {
                 return newDomainRule;
             }
 
@@ -55,7 +57,7 @@
     // Seems like we shouldn't be allowed to do this, but, welp it works...
     unsafeWindow.eval(`
 
-        var allPurposeProxy,
+        var isDebugMode = ("${isDebugMode}" === "debug"),
             featuresToBlock = eval(${featuresToBlockEnc}),
             defaultFunction = function () {},
             funcPropNames = Object.getOwnPropertyNames(defaultFunction),
@@ -63,6 +65,8 @@
                 var possiblePropDesc = Object.getOwnPropertyDescriptor(defaultFunction, propName);
                 return (possiblePropDesc && !possiblePropDesc.configurable);
             }),
+            createBlockingProxy,
+            defaultBlockingProxy,
             pathToRef,
             noOpFunc,
             toPrimitiveFunc,
@@ -87,7 +91,7 @@
         };
 
         toPrimitiveFunc = function (hint) {
-            if (hint === "number") {
+            if (hint === "number" || hint === "default") {
                 return 0;
             }
             if (hint === "string") {
@@ -96,44 +100,63 @@
             return undefined;
         };
 
-        defaultFunction.valueOf = toPrimitiveFunc;
+        createBlockingProxy = function (keyPath) {
 
-        allPurposeProxy = new Proxy(defaultFunction, {
-            get: function (target, property, receiver) {
-                if (property === "valueOf") {
-                    return target[property];
-                }
+            var hasBeenLogged = false,
+                logKeyPath = function () {
+                    if (keyPath !== undefined && hasBeenLogged === false) {
+                        hasBeenLogged = true;
+                        console.log(keyPath);
+                    }
+                },
+                blockingProxy;
 
-                if (property === Symbol.toPrimitive) {
-                    return toPrimitiveFunc;
-                }
+            blockingProxy = new Proxy(defaultFunction, {
+                get: function (target, property) {
+                    logKeyPath();
 
-                return allPurposeProxy;
-            },
-            set: function (target, property, value, receiver) {
-                return allPurposeProxy;
-            },
-            apply: function (target, thisArg, argumentsList) {
-                return allPurposeProxy;
-            },
-            ownKeys: function (target) {
-                return unconfigurablePropNames;
-            },
-            has: function (target, property) {
-                return (unconfigurablePropNames.indexOf(property) > -1);
-            },
-            getOwnPropertyDescriptor: function (target, property) {
-                if (unconfigurablePropNames.indexOf(property) === -1) {
-                    return undefined;
+                    if (property === Symbol.toPrimitive) {
+                        return toPrimitiveFunc;
+                    }
+
+                    if (property === "valueOf") {
+                        return toPrimitiveFunc;
+                    }
+
+                    return blockingProxy;
+                },
+                set: function (target, property, value) {
+                    logKeyPath();
+                    return blockingProxy;
+                },
+                apply: function (target, thisArg, argumentsList) {
+                    logKeyPath();
+                    return blockingProxy;
+                },
+                ownKeys: function (target) {
+                    return unconfigurablePropNames;
+                },
+                has: function (target, property) {
+                    return (unconfigurablePropNames.indexOf(property) > -1);
+                },
+                getOwnPropertyDescriptor: function (target, property) {
+                    if (unconfigurablePropNames.indexOf(property) === -1) {
+                        return undefined;
+                    }
+                    return Object.getOwnPropertyDescriptor(defaultFunction, property);
                 }
-                return Object.getOwnPropertyDescriptor(defaultFunction, property);
-            }
-        });
+            });
+
+            return blockingProxy;
+        };
+
+        defaultBlockingProxy = createBlockingProxy();
 
         // For each feature we've specified to block on this domain,
         // walk the key-value path, starting from the root / window object,
         // and replace the leaf with our allPurproseProxy object, to render
         // the feature unreachable by client code.
+
         featuresToBlock.forEach(function (row) {
 
             var featurePath = row[0],
@@ -141,7 +164,7 @@
                 pathSegments = featurePath.split("."),
                 numSegments = pathSegments.length,
                 pathToRoot = pathSegments.slice(0, numSegments - 1),
-                leaf = pathSegments[numSegments - 1],
+                leafName = pathSegments[numSegments - 1],
                 rootElement = pathToRef(pathToRoot);
 
             if (rootElement === undefined) {
@@ -150,9 +173,18 @@
             }
 
             if (featureType === "property") {
-                rootElement.watch(leaf, noOpFunc);
+
+                rootElement.watch(leafName, function (id, oldval, newval) {
+                    return noOpFunc.call(this, id, oldval, newval);
+                });
+
             } else {
-                rootElement[leaf] = allPurposeProxy;
+
+                if (isDebugMode === true) {
+                    rootElement[leafName] = createBlockingProxy(pathSegments);
+                } else {
+                    rootElement[leafName] = defaultBlockingProxy;
+                }
             }
         });
     `);
