@@ -1,3 +1,6 @@
+**NOTE:** This project is now being maintained as cross-browser, WebExtension
+based extension called [Web API Manager](https://github.com/snyderp/web-api-manager).
+
 API Blocking Firefox Extension
 ===
 
